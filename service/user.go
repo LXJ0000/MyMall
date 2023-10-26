@@ -17,7 +17,7 @@ type UserService struct {
 }
 
 func (u *UserService) Register(ctx context.Context) serializer.Response {
-	var user model.User
+	var user *model.User
 	code := e.Success
 	if u.Key == "" || len(u.Key) != 16 {
 		code = e.Error
@@ -39,7 +39,7 @@ func (u *UserService) Register(ctx context.Context) serializer.Response {
 			Msg:    e.GetMsg(code),
 		}
 	}
-	user = model.User{
+	user = &model.User{
 		UserName: u.UserName,
 		NickName: u.NickName,
 		Avatar:   "avatar.jpg",
@@ -56,11 +56,55 @@ func (u *UserService) Register(ctx context.Context) serializer.Response {
 	}
 
 	// Create User
-	if err := userDao.CreateUser(&user); err != nil {
+	if err := userDao.CreateUser(user); err != nil {
 		code = e.Error
 	}
 	return serializer.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
+	}
+}
+
+func (u *UserService) Login(ctx context.Context) serializer.Response {
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	//判断用户是否存在
+	user, exist, _ := userDao.ExistOrNotByUserName(u.UserName)
+	if !exist {
+		code = e.ErrorExistUserNotFound
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   "用户不存在，请先注册。",
+		}
+	}
+	//校验密码
+	if !user.CheckPassword(u.Password) {
+		code = e.ErrorPassword
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   "密码错误，请重试。",
+		}
+	}
+
+	//http 无状态（认证：token）
+	token, err := util.GenerateToken(user.ID, user.UserName, 0)
+	if err != nil {
+		code = e.ErrorAuthToken
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   "密码错误，请重试。",
+		}
+	}
+
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data: serializer.TokenData{
+			User:  serializer.BuildUser(user),
+			Token: token,
+		},
 	}
 }

@@ -20,7 +20,7 @@ func NewUserDaoByDB(db *gorm.DB) *UserDao {
 
 // ExistOrNotByUserName 判断用户名是否存在
 func (u *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exist bool, err error) {
-	err = u.DB.Model(&model.User{}).Where("username=?", userName).First(&user).Error
+	err = u.DB.Model(&model.User{}).Where("user_name=?", userName).First(&user).Error
 	if err != nil {
 		return nil, false, err
 	}
