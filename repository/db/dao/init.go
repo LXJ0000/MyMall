@@ -22,11 +22,11 @@ func DataBase(connRead, connWrite string) {
 	}
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       connRead,
-		DefaultStringSize:         256,  // string类型字段默认长度
-		DisableDatetimePrecision:  true, // 禁止datetime精度 mysql 5.6之前是不支持
-		DontSupportRenameIndex:    true, //重命名索引 要先删除再重建 mysql 5.7之前是不支持的
-		DontSupportRenameColumn:   true, // 用change重命名列 mysql8之前不支持
-		SkipInitializeWithVersion: false,
+		DefaultStringSize:         256,   // string类型字段默认长度
+		DisableDatetimePrecision:  true,  // 禁止datetime精度 mysql 5.6之前是不支持
+		DontSupportRenameIndex:    true,  //重命名索引 要先删除再重建 mysql 5.7之前是不支持的
+		DontSupportRenameColumn:   true,  // 用change重命名列 mysql8之前不支持
+		SkipInitializeWithVersion: false, // 不 跳过 Gorm 初始化检查
 	}), &gorm.Config{
 		Logger: ormLogger,
 		NamingStrategy: schema.NamingStrategy{
@@ -37,9 +37,9 @@ func DataBase(connRead, connWrite string) {
 		return
 	}
 	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(20) // 设置连接池
+	sqlDB.SetMaxOpenConns(20) //连接数
 	sqlDB.SetConnMaxLifetime(time.Second * 30)
-	sqlDB.SetMaxIdleConns(100)
+	sqlDB.SetMaxIdleConns(100) // 设置连接池
 	_db = db
 
 	//	主从配置
