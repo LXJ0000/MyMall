@@ -1,12 +1,14 @@
 package service
 
 import (
+	"MyMall/config"
 	"MyMall/pkg/e"
 	util "MyMall/pkg/utils"
 	"MyMall/repository/db/dao"
 	"MyMall/repository/db/model"
 	"MyMall/serializer"
 	"context"
+	"gopkg.in/mail.v2"
 	"mime/multipart"
 )
 
@@ -15,6 +17,12 @@ type UserService struct {
 	UserName string `json:"user_name" form:"user_name"`
 	Password string `json:"password" form:"password"`
 	Key      string `json:"key" form:"key"` // 前端验证
+}
+
+type UserSendEmailService struct {
+	Email         string `json:"email" form:"email"`
+	Password      string `json:"password" form:"password"`
+	OperationType uint   `json:"operation_type" form:"operation_type"`
 }
 
 func (u *UserService) Register(ctx context.Context) serializer.Response {
@@ -38,6 +46,7 @@ func (u *UserService) Register(ctx context.Context) serializer.Response {
 		return serializer.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
+			Error:  "用户不存在",
 		}
 	}
 	user = &model.User{
@@ -53,6 +62,7 @@ func (u *UserService) Register(ctx context.Context) serializer.Response {
 		return serializer.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
+			Error:  "密码解析失败",
 		}
 	}
 
@@ -167,5 +177,53 @@ func (u *UserService) UploadAvatar(ctx context.Context, userId uint, file multip
 		Status: code,
 		Msg:    e.GetMsg(code),
 		Data:   serializer.BuildUser(user),
+	}
+}
+
+func (u *UserSendEmailService) UserSendEmail(ctx context.Context, userId uint) serializer.Response {
+	code := e.Success
+	token, err := util.GenerateEmailToken(userId, u.Email, u.Password, u.OperationType)
+	if err != nil {
+		code = e.ErrorAuthToken
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   nil,
+			Error:  "用户登陆信息过期",
+		}
+	}
+	noticeDao := dao.NewNoticeDao(ctx)
+	notice, err := noticeDao.GetNoticeById(u.OperationType)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   nil,
+			Error:  "Operation选择错误",
+		}
+	}
+	addr := config.ValidEmail + token
+	mailStr := notice.Text
+	mailText := mailStr + addr
+	m := mail.NewMessage()
+	m.SetHeader("From", config.SmtpEmail)
+	m.SetHeader("To", u.Email)
+	m.SetHeader("Subject", "From LXJ ")
+	m.SetBody("text/html", mailText)
+	d := mail.NewDialer(config.SmtpHost, 465, config.SmtpEmail, config.SmtpPass)
+	d.StartTLSPolicy = mail.MandatoryStartTLS
+	if err = d.DialAndSend(m); err != nil {
+		code = e.ErrorSendMailFail
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   nil,
+			Error:  err.Error(),
+		}
+	}
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
 	}
 }

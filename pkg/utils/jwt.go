@@ -19,7 +19,7 @@ type EmailClaims struct {
 	ID            uint   `json:"id"`
 	Email         string `json:"email"`
 	Password      string `json:"password"`
-	OperationType int    `json:"operation_type"`
+	OperationType uint   `json:"operation_type"`
 	jwt.RegisteredClaims
 }
 
@@ -57,7 +57,7 @@ func ParseToken(tokenStr string) (*Claims, error) {
 }
 
 // GenerateEmailToken  签发token
-func GenerateEmailToken(id uint, email, password string, operationType int) (string, error) {
+func GenerateEmailToken(id uint, email, password string, operationType uint) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(24 * time.Hour)
 	claims := EmailClaims{

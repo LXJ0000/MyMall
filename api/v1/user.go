@@ -48,5 +48,11 @@ func UserUploadAvatar(c *gin.Context) {
 }
 
 func UserSendingEmail(c *gin.Context) {
-	
+	var userSendEmail service.UserSendEmailService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&userSendEmail); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	res := userSendEmail.UserSendEmail(c.Request.Context(), claims.ID)
+	c.JSON(http.StatusOK, res)
 }
