@@ -7,6 +7,7 @@ import (
 	"MyMall/repository/db/model"
 	"MyMall/serializer"
 	"context"
+	"mime/multipart"
 )
 
 type UserService struct {
@@ -136,4 +137,35 @@ func (u *UserService) Update(ctx context.Context, userId uint) serializer.Respon
 		},
 	}
 
+}
+
+func (u *UserService) UploadAvatar(ctx context.Context, userId uint, file multipart.File, fileHeader *multipart.FileHeader) serializer.Response {
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, _ := userDao.GetUserByUserId(userId)
+
+	filePath, err := util.UploadAvatarToLocalStatic(user.ID, user.UserName, file, fileHeader.Filename)
+	if err != nil {
+		code = e.ErrorFileUploadFail
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   err.Error(),
+		}
+	}
+	user.Avatar = filePath
+	if err = userDao.UpdateUserByUserId(userId, user); err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   nil,
+			Error:  "用户信息更新失败-头像",
+		}
+	}
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildUser(user),
+	}
 }

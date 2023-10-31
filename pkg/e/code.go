@@ -10,4 +10,5 @@ const (
 	ErrorPassword              = 30004
 	ErrorAuthToken             = 30005
 	ErrorAuthCheckTokenTimeOut = 30006
+	ErrorFileUploadFail        = 30007
 )
