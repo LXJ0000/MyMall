@@ -1,6 +1,7 @@
 package v1
 
 import (
+	util "MyMall/pkg/utils"
 	"MyMall/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -21,5 +22,15 @@ func UserLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 	}
 	res := userLogin.Login(c.Request.Context())
+	c.JSON(http.StatusOK, res)
+}
+
+func UserUpdate(c *gin.Context) {
+	var userUpdate service.UserService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&userUpdate); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	res := userUpdate.Update(c.Request.Context(), claims.ID)
 	c.JSON(http.StatusOK, res)
 }

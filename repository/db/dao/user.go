@@ -30,3 +30,11 @@ func (u *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exist
 func (u *UserDao) CreateUser(user *model.User) error {
 	return u.DB.Model(&model.User{}).Create(&user).Error
 }
+
+func (u *UserDao) GetUserByUserId(userId uint) (user *model.User, err error) {
+	err = u.DB.Model(&model.User{}).Where("id=?", userId).First(&user).Error
+	return
+}
+func (u *UserDao) UpdateUserByUserId(userId uint, user *model.User) error {
+	return u.DB.Model(&model.User{}).Where("id=?", userId).Updates(&user).Error
+}
