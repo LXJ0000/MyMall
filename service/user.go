@@ -8,8 +8,10 @@ import (
 	"MyMall/repository/db/model"
 	"MyMall/serializer"
 	"context"
+	"fmt"
 	"gopkg.in/mail.v2"
 	"mime/multipart"
+	"time"
 )
 
 type UserService struct {
@@ -23,6 +25,10 @@ type UserSendEmailService struct {
 	Email         string `json:"email" form:"email"`
 	Password      string `json:"password" form:"password"`
 	OperationType uint   `json:"operation_type" form:"operation_type"`
+	//1 绑定邮箱 2解绑邮箱 3修改密码
+}
+
+type UserValidEmailService struct {
 }
 
 func (u *UserService) Register(ctx context.Context) serializer.Response {
@@ -182,6 +188,7 @@ func (u *UserService) UploadAvatar(ctx context.Context, userId uint, file multip
 
 func (u *UserSendEmailService) UserSendEmail(ctx context.Context, userId uint) serializer.Response {
 	code := e.Success
+	fmt.Println(u)
 	token, err := util.GenerateEmailToken(userId, u.Email, u.Password, u.OperationType)
 	if err != nil {
 		code = e.ErrorAuthToken
@@ -213,6 +220,9 @@ func (u *UserSendEmailService) UserSendEmail(ctx context.Context, userId uint) s
 	m.SetBody("text/html", mailText)
 	d := mail.NewDialer(config.SmtpHost, 465, config.SmtpEmail, config.SmtpPass)
 	d.StartTLSPolicy = mail.MandatoryStartTLS
+	fmt.Println(m)
+	fmt.Println(d)
+
 	if err = d.DialAndSend(m); err != nil {
 		code = e.ErrorSendMailFail
 		return serializer.Response{
@@ -225,5 +235,62 @@ func (u *UserSendEmailService) UserSendEmail(ctx context.Context, userId uint) s
 	return serializer.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
+	}
+}
+
+func (u *UserValidEmailService) UserValidEmail(ctx context.Context, token string) serializer.Response {
+	code := e.Success
+	var (
+		userId        uint
+		password      string
+		operationType uint
+		email         string
+	)
+	if token == "" {
+		code = e.InvalidParams
+	} else {
+		claims, err := util.ParseEmailToken(token)
+		if err != nil {
+			code = e.ErrorAuthToken
+		} else if time.Now().Unix() > claims.ExpiresAt.Unix() {
+			code = e.ErrorAuthCheckTokenTimeOut
+		} else {
+			userId = claims.ID
+			password = claims.Password
+			operationType = claims.OperationType
+			email = claims.Email
+		}
+	}
+	if code != e.Success {
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+		}
+	}
+	//用户查询
+	userDao := dao.NewUserDao(ctx)
+	user, _ := userDao.GetUserByUserId(userId)
+
+	if operationType == 1 {
+		//绑定
+		user.Email = email
+	} else if operationType == 2 {
+		//解绑
+		user.Email = ""
+	} else {
+		//修改密码
+		if err := user.SetPassword(password); err != nil {
+			code = e.ErrorPassword
+			return serializer.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+			}
+		}
+	}
+	_ = userDao.UpdateUserByUserId(userId, user)
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildUser(user),
 	}
 }

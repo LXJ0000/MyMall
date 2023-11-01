@@ -29,7 +29,7 @@ func NewRoute() *gin.Engine {
 			authed.PUT("user", api.UserUpdate)
 			authed.PUT("avatar", api.UserUploadAvatar)
 			authed.POST("user/sending-email", api.UserSendingEmail)
-
+			authed.POST("user/valid-email", api.UserValidEmail)
 		}
 
 	}

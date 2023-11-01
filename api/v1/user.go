@@ -56,3 +56,12 @@ func UserSendingEmail(c *gin.Context) {
 	res := userSendEmail.UserSendEmail(c.Request.Context(), claims.ID)
 	c.JSON(http.StatusOK, res)
 }
+
+func UserValidEmail(c *gin.Context) {
+	var userValidEmail service.UserValidEmailService
+	if err := c.ShouldBind(&userValidEmail); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	res := userValidEmail.UserValidEmail(c.Request.Context(), c.GetHeader("Authorization"))
+	c.JSON(http.StatusOK, res)
+}
