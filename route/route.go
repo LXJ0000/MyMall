@@ -30,6 +30,9 @@ func NewRoute() *gin.Engine {
 			authed.PUT("avatar", api.UserUploadAvatar)
 			authed.POST("user/sending-email", api.UserSendingEmail)
 			authed.POST("user/valid-email", api.UserValidEmail)
+
+			//	显示金额
+			authed.POST("money", api.ShowUserMoney)
 		}
 
 	}

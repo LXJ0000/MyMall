@@ -65,3 +65,13 @@ func UserValidEmail(c *gin.Context) {
 	res := userValidEmail.UserValidEmail(c.Request.Context(), c.GetHeader("Authorization"))
 	c.JSON(http.StatusOK, res)
 }
+
+func ShowUserMoney(c *gin.Context) {
+	var showUserMoney service.ShowUserMoneyService
+	claims, _ := util.ParseToken(c.GetHeader("Authorization"))
+	if err := c.ShouldBind(&showUserMoney); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	res := showUserMoney.ShowUserMoney(c.Request.Context(), claims.ID)
+	c.JSON(http.StatusOK, res)
+}

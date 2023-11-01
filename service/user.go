@@ -31,6 +31,10 @@ type UserSendEmailService struct {
 type UserValidEmailService struct {
 }
 
+type ShowUserMoneyService struct {
+	Key string `json:"key" form:"key"`
+}
+
 func (u *UserService) Register(ctx context.Context) serializer.Response {
 	var user *model.User
 	code := e.Success
@@ -292,5 +296,24 @@ func (u *UserValidEmailService) UserValidEmail(ctx context.Context, token string
 		Status: code,
 		Msg:    e.GetMsg(code),
 		Data:   serializer.BuildUser(user),
+	}
+}
+
+func (s *ShowUserMoneyService) ShowUserMoney(ctx context.Context, userId uint) serializer.Response {
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, err := userDao.GetUserByUserId(userId)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  "用户id获取用户信息失败",
+		}
+	}
+	return serializer.Response{
+		Status: code,
+		Data:   serializer.BuildUserMoney(user, s.Key),
+		Msg:    e.GetMsg(code),
 	}
 }
