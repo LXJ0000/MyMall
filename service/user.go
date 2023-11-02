@@ -28,8 +28,7 @@ type UserSendEmailService struct {
 	//1 绑定邮箱 2解绑邮箱 3修改密码
 }
 
-type UserValidEmailService struct {
-}
+type UserValidEmailService struct{}
 
 type ShowUserMoneyService struct {
 	Key string `json:"key" form:"key"`
@@ -165,7 +164,8 @@ func (u *UserService) UploadAvatar(ctx context.Context, userId uint, file multip
 	userDao := dao.NewUserDao(ctx)
 	user, _ := userDao.GetUserByUserId(userId)
 
-	filePath, err := util.UploadAvatarToLocalStatic(user.ID, user.UserName, file, fileHeader.Filename)
+	//filePath, err := util.UploadAvatarToLocalStatic(user.ID, user.UserName, file, fileHeader.Filename)
+	filePath, err := UploadToLocalStatic("avatar", userId, user.UserName, fileHeader.Filename, file)
 	if err != nil {
 		code = e.ErrorFileUploadFail
 		return serializer.Response{

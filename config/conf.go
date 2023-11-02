@@ -1,6 +1,7 @@
 package config
 
 import (
+	"MyMall/repository/cache"
 	"MyMall/repository/db/dao"
 	"gopkg.in/ini.v1"
 	"strings"
@@ -55,6 +56,8 @@ func Init() {
 	pathWrite := strings.Join([]string{DbUser, ":", DbPassword, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8mb4&parseTime=true"}, "")
 
 	dao.DataBase(pathRead, pathWrite)
+
+	cache.Redis()
 }
 
 func LoadServer(file *ini.File) {
