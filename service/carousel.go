@@ -2,6 +2,7 @@ package service
 
 import (
 	"MyMall/pkg/e"
+	util "MyMall/pkg/utils"
 	"MyMall/repository/db/dao"
 	"MyMall/serializer"
 	"context"
@@ -15,6 +16,7 @@ func (l *ListCarouselService) GetListCarousel(ctx context.Context) serializer.Re
 	carouselDao := dao.NewCarouselDao(ctx)
 	carousel, err := carouselDao.GetCarousel()
 	if err != nil {
+		util.LogrusObj.Infoln(err)
 		code = e.Error
 		return serializer.Response{
 			Status: code,

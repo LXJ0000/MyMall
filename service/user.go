@@ -39,6 +39,7 @@ func (u *UserService) Register(ctx context.Context) serializer.Response {
 	var user *model.User
 	code := e.Success
 	if u.Key == "" || len(u.Key) != 16 {
+		util.LogrusObj.Infoln("密钥长度不足")
 		code = e.Error
 		return serializer.Response{
 			Status: code,
