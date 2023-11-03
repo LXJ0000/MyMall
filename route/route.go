@@ -25,6 +25,9 @@ func NewRoute() *gin.Engine {
 		// 轮播图
 		v1.GET("carousels", api.ListCarousel)
 
+		//商品
+		v1.GET("product", api.ListProduct)
+
 		authed := v1.Group("/") // 需要登陆保护
 		authed.Use(middleware.JWT())
 		{

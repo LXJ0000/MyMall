@@ -2,6 +2,7 @@ package service
 
 import (
 	"MyMall/pkg/e"
+	util "MyMall/pkg/utils"
 	"MyMall/repository/db/dao"
 	"MyMall/repository/db/model"
 	"MyMall/serializer"
@@ -104,4 +105,37 @@ func (service *ProductService) CreateProduct(ctx context.Context, userId uint, f
 		Msg:    e.GetMsg(code),
 		Data:   serializer.BuildProduct(product),
 	}
+}
+
+func (service *ProductService) ListProduct(ctx context.Context) serializer.Response {
+	code := e.Success
+	productDao := dao.NewProductDao(ctx)
+	if service.PageSize == 0 {
+		service.PageSize = 15
+	}
+	condition := make(map[string]interface{})
+	if service.CategoryId != 0 {
+		condition["category_id"] = service.CategoryId
+	}
+	total, err := productDao.CountProductByCondition(condition)
+	if err != nil {
+		code = e.Error
+		util.LogrusObj.Infoln("err:", err.Error())
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	var products []*model.Product
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		productDao = dao.NewProductDaoByDB(productDao.DB)
+		products, _ = productDao.ListProductByCondition(condition, &service.BasePage)
+		wg.Done()
+	}()
+	wg.Wait()
+
+	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(total))
 }

@@ -20,3 +20,14 @@ func CreateProduct(c *gin.Context) {
 	res := createProductService.CreateProduct(c.Request.Context(), claims.ID, files)
 	c.JSON(http.StatusOK, res)
 }
+
+func ListProduct(c *gin.Context) {
+	var listProductService service.ProductService
+	if err := c.ShouldBind(&listProductService); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Errorln("err", err)
+		return
+	}
+	res := listProductService.ListProduct(c.Request.Context())
+	c.JSON(http.StatusOK, res)
+}
