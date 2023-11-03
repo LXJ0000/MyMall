@@ -39,6 +39,6 @@ func BuildProduct(product *model.Product) *Product {
 		OnSale:        product.OnSale,
 		BossId:        product.BossId,
 		BossName:      product.BossName,
-		BossAvatar:    product.BossAvatar,
+		BossAvatar:    config.Host + config.HttpPort + config.AvatarPath + product.BossAvatar,
 	}
 }

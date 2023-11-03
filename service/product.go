@@ -74,7 +74,7 @@ func (service *ProductService) CreateProduct(ctx context.Context, userId uint, f
 		//num := strconv.Itoa(idx)
 		productImgDao := dao.NewProductImgDaoByDB(productDao.DB)
 		tmp, _ = file.Open()
-		filePath, err = UploadToLocalStatic("product", product.ID, strconv.Itoa(int(time.Now().Unix())), file.Filename, tmp)
+		filePath, err = UploadToLocalStatic("product", product.ID, strconv.Itoa(int(time.Now().UnixMicro())), file.Filename, tmp)
 		if err != nil {
 			code = e.ErrorProductImgUpload
 			return serializer.Response{

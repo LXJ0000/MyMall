@@ -57,7 +57,7 @@ func Init() {
 
 	dao.DataBase(pathRead, pathWrite)
 
-	cache.Redis()
+	cache.Redis(RedisAddr, RedisDbName)
 }
 
 func LoadServer(file *ini.File) {
