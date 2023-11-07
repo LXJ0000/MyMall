@@ -20,8 +20,8 @@ func NewProductDaoByDB(db *gorm.DB) *ProductDao {
 func (dao *ProductDao) CreateProduct(product *model.Product) error {
 	return dao.DB.Model(&model.Product{}).Create(&product).Error
 }
-func (dao *ProductDao) UpdateProductImg(product *model.Product) error {
-	return dao.DB.Model(&model.Product{}).Updates(product).Error
+func (dao *ProductDao) UpdateProductImg(id uint, product *model.Product) error {
+	return dao.DB.Model(&model.Product{}).Where("id=?", id).Updates(&product).Error
 }
 func (dao *ProductDao) CountProductByCondition(condition map[string]interface{}) (total int64, err error) {
 	err = dao.DB.Model(&model.Product{}).Where(condition).Count(&total).Error

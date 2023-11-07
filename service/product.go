@@ -56,6 +56,7 @@ func (service *ProductService) CreateProduct(ctx context.Context, userId uint, f
 	}
 	//	以第一张图片作为封面
 	tmp, _ := files[0].Open()
+	//top为封面图名称 存储地址为static\img\product\product_id\top.jpg
 	filePath, err := UploadToLocalStatic("product", product.ID, "top", files[0].Filename, tmp)
 	if err != nil {
 		code = e.ErrorProductImgUpload
@@ -66,7 +67,7 @@ func (service *ProductService) CreateProduct(ctx context.Context, userId uint, f
 		}
 	}
 	product.ImgPath = filePath
-	_ = productDao.UpdateProductImg(product)
+	_ = productDao.UpdateProductImg(product.ID, product)
 
 	//	多图片创建 并发
 	wg := new(sync.WaitGroup)
