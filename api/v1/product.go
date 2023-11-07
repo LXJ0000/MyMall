@@ -31,3 +31,14 @@ func ListProduct(c *gin.Context) {
 	res := listProductService.ListProduct(c.Request.Context())
 	c.JSON(http.StatusOK, res)
 }
+
+func SearchProduct(c *gin.Context) {
+	var searchProduct service.ProductService
+	if err := c.ShouldBind(&searchProduct); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Errorln("err", err)
+		return
+	}
+	res := searchProduct.SearchProduct(c.Request.Context())
+	c.JSON(http.StatusOK, res)
+}
