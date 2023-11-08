@@ -30,6 +30,10 @@ func NewRoute() *gin.Engine {
 		v1.GET("product", api.ListProduct)
 		//搜索商品
 		v1.POST("products", api.SearchProduct)
+		//展示商品信息
+		v1.GET("product/:id", api.ShowProduct)
+		//展示商品图片
+		v1.GET("img/:id", api.ListProductImg)
 
 		authed := v1.Group("/") // 需要登陆保护
 		authed.Use(middleware.JWT())

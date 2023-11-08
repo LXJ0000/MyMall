@@ -160,3 +160,31 @@ func (service *ProductService) SearchProduct(ctx context.Context) serializer.Res
 	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(total))
 
 }
+
+func (service *ProductService) ShowProduct(ctx context.Context, productId string) serializer.Response {
+	code := e.Success
+	productDao := dao.NewProductDao(ctx)
+	pId, err := strconv.Atoi(productId)
+	if err != nil {
+		code = e.InvalidParams
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	product, err := productDao.GetProductById(pId)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildProduct(product),
+	}
+}

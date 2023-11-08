@@ -42,3 +42,25 @@ func SearchProduct(c *gin.Context) {
 	res := searchProduct.SearchProduct(c.Request.Context())
 	c.JSON(http.StatusOK, res)
 }
+
+func ShowProduct(c *gin.Context) {
+	var showProduct service.ProductService
+	if err := c.ShouldBind(&showProduct); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Errorln("err", err)
+		return
+	}
+	res := showProduct.ShowProduct(c.Request.Context(), c.Param("id"))
+	c.JSON(http.StatusOK, res)
+}
+
+func ListProductImg(c *gin.Context) {
+	var listProductImg service.ProductImgService
+	if err := c.ShouldBind(&listProductImg); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Errorln("err", err)
+		return
+	}
+	res := listProductImg.ListProductImg(c.Request.Context(), c.Param("id"))
+	c.JSON(http.StatusOK, res)
+}
