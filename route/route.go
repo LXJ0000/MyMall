@@ -34,6 +34,8 @@ func NewRoute() *gin.Engine {
 		v1.GET("product/:id", api.ShowProduct)
 		//展示商品图片
 		v1.GET("img/:id", api.ListProductImg)
+		//展示商品分类
+		v1.GET("categories", api.ListCategories)
 
 		authed := v1.Group("/") // 需要登陆保护
 		authed.Use(middleware.JWT())
@@ -50,6 +52,11 @@ func NewRoute() *gin.Engine {
 			//商品操作
 			//创建商品
 			authed.POST("product", api.CreateProduct)
+
+			//	收藏夹操作
+			authed.POST("favorite", api.CreateFavorite)
+			authed.GET("favorite", api.ShowFavorite)
+			authed.DELETE("favorite/:id", api.DeleteFavorite)
 
 		}
 

@@ -64,3 +64,14 @@ func ListProductImg(c *gin.Context) {
 	res := listProductImg.ListProductImg(c.Request.Context(), c.Param("id"))
 	c.JSON(http.StatusOK, res)
 }
+
+func ListCategories(c *gin.Context) {
+	var listCategories service.CategoryService
+	if err := c.ShouldBind(&listCategories); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Errorln("err", err)
+		return
+	}
+	res := listCategories.ListCategories(c.Request.Context())
+	c.JSON(http.StatusOK, res)
+}

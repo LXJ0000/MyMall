@@ -43,7 +43,7 @@ func (dao *ProductDao) SearchProduct(info string, page model.BasePage) (products
 		Error
 	return
 }
-func (dao *ProductDao) GetProductById(pId int) (product *model.Product, err error) {
+func (dao *ProductDao) GetProductById(pId uint) (product *model.Product, err error) {
 	err = dao.DB.Where(&model.Product{}).Where("id=?", pId).First(&product).Error
 	return
 }

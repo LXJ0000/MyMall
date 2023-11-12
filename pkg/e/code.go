@@ -17,4 +17,7 @@ const (
 
 	// product模块错误
 	ErrorProductImgUpload = 40001
+
+	//favorite模块错误
+	ErrorFavoriteExist = 50001
 )

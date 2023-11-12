@@ -173,7 +173,7 @@ func (service *ProductService) ShowProduct(ctx context.Context, productId string
 			Error:  err.Error(),
 		}
 	}
-	product, err := productDao.GetProductById(pId)
+	product, err := productDao.GetProductById(uint(pId))
 	if err != nil {
 		code = e.Error
 		return serializer.Response{
