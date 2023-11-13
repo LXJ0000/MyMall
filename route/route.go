@@ -58,6 +58,12 @@ func NewRoute() *gin.Engine {
 			authed.GET("favorite", api.ShowFavorite)
 			authed.DELETE("favorite/:id", api.DeleteFavorite)
 
+			//	地址操作
+			authed.POST("address", api.CreateAddress)
+			authed.GET("address", api.GetAddressList)
+			authed.GET("address/:id", api.GetAddress)
+			authed.PUT("address/:id", api.UpdateAddress)
+			authed.DELETE("address/:id", api.DeleteAddress)
 		}
 
 	}
