@@ -15,6 +15,7 @@ type Order struct {
 	UserId       uint    `json:"user_id"`
 	BossId       uint    `json:"boss_id"`
 	ProductId    uint    `json:"product_id"`
+	Num          int     `json:"num"`
 	AddressName  string  `json:"address_name"`
 	AddressPhone string  `json:"address_phone"`
 	Address      string  `json:"address"`
@@ -33,6 +34,7 @@ func BuildOrder(order *model.Order, addr *model.Address, product *model.Product)
 		UserId:    order.UserId,
 		BossId:    order.BossId,
 		ProductId: order.ProductId,
+		Num:       order.Num,
 		Type:      order.Type,
 		Money:     order.Money,
 

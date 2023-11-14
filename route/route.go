@@ -77,6 +77,9 @@ func NewRoute() *gin.Engine {
 			authed.GET("order/:id", api.GetOrder)
 			authed.DELETE("order/:id", api.DeleteOrder)
 			authed.GET("order", api.GetOrderList)
+
+			//支付模块
+			authed.POST("pay", api.Pay)
 		}
 
 	}

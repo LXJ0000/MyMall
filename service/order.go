@@ -13,12 +13,11 @@ import (
 )
 
 type OrderService struct {
-	ProductId uint    `json:"product_id" form:"product_id"`
-	BossId    uint    `json:"boss_id" form:"boss_id"`
-	AddressId uint    `json:"address_id" form:"address_id"`
-	Type      uint    `json:"type" form:"type"`
-	Money     float64 `json:"money" form:"money"`
-	OrderNum  string  `json:"order_num" form:"order_num"`
+	ProductId uint   `json:"product_id" form:"product_id"`
+	Num       int    `json:"num" form:"num"`
+	AddressId uint   `json:"address_id" form:"address_id"`
+	Type      uint   `json:"type" form:"type"`
+	OrderNum  string `json:"order_num" form:"order_num"`
 	model.BasePage
 }
 
@@ -48,13 +47,15 @@ func (service *OrderService) CreateOrder(ctx context.Context, uId uint) serializ
 	}
 
 	orderDao := dao.NewOrderDao(ctx)
+	productDiscountPrice, _ := strconv.ParseFloat(product.DiscountPrice, 64)
 	order := &model.Order{
 		UserId:    uId,
 		ProductId: service.ProductId,
 		BossId:    product.BossId,
 		AddressId: service.AddressId,
 		Type:      1, // 默认未支付 = 1
-		Money:     service.Money,
+		Money:     float64(service.Num) * productDiscountPrice,
+		Num:       service.Num,
 	}
 
 	//创建订单号

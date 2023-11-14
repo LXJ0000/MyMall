@@ -47,3 +47,11 @@ func (dao *ProductDao) GetProductById(pId uint) (product *model.Product, err err
 	err = dao.DB.Model(&model.Product{}).Where("id=?", pId).First(&product).Error
 	return
 }
+func (dao *ProductDao) UpdateProductById(pId uint, product *model.Product) (err error) {
+	err = dao.DB.Model(&model.Product{}).Where("id=?", pId).Updates(&product).Error
+	return
+}
+func (dao *ProductDao) GetProductByProductIdAndBossId(pId, uId uint) (product *model.Product, err error) {
+	err = dao.DB.Model(&model.Product{}).Where("id=? AND boss_id=?", pId, uId).First(&product).Error
+	return
+}
