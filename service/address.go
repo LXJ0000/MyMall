@@ -25,7 +25,6 @@ func (service *AddressService) CreateAddress(ctx context.Context, uId uint) seri
 		Phone:   service.Phone,
 		Address: service.Address,
 	}
-	fmt.Println(service)
 	if err := addressDao.CreateAddress(addr); err != nil {
 		code = e.Error
 		return serializer.Response{
@@ -143,7 +142,6 @@ func (service *AddressService) UpdateAddress(ctx context.Context, uId uint, addr
 	if service.Phone != "" {
 		addr.Phone = service.Phone
 	}
-	fmt.Println(addr)
 	if err = addressDao.UpdateAddressByAddressIdAndUserId(uint(addrId), uId, addr); err != nil {
 		code = e.Error
 		return serializer.Response{
