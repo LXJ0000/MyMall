@@ -13,8 +13,7 @@ type CartService struct {
 	ProductId uint `json:"product_id" form:"product_id"`
 	BossId    uint `json:"boss_id" form:"boss_id"`
 	Num       uint `json:"num" form:"num"`
-	//MaxNum    uint `json:"max_num" form:"max_num"`
-	//Check     bool `json:"check" form:"check"`
+	//	todo 分页
 }
 
 func (service *CartService) CreateCart(ctx context.Context, uId uint) serializer.Response {

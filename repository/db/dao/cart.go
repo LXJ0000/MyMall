@@ -25,6 +25,7 @@ func (dao *CartDao) GetCartByCartIdAndUserId(aId uint, uId uint) (cart *model.Ca
 }
 func (dao *CartDao) GetCartListByUserId(uId uint) (list []*model.Cart, err error) {
 	err = dao.DB.Model(&model.Cart{}).Where("user_id=?", uId).Find(&list).Error
+	//todo 分页
 	return
 }
 func (dao *CartDao) GetCartByProductAndUserId(pId uint, uId uint) (cart *model.Cart, err error) {

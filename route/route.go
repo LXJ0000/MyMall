@@ -71,6 +71,12 @@ func NewRoute() *gin.Engine {
 			authed.GET("cart/:id", api.GetCart)
 			authed.PUT("cart/:id", api.UpdateCart)
 			authed.GET("cart", api.GetCartList)
+
+			//	订单操作
+			authed.POST("order", api.CreateOrder)
+			authed.GET("order/:id", api.GetOrder)
+			authed.DELETE("order/:id", api.DeleteOrder)
+			authed.GET("order", api.GetOrderList)
 		}
 
 	}
